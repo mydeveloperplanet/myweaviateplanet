@@ -1,6 +1,5 @@
 package com.mydeveloperplanet.myweaviateplanet;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.mydeveloperplanet.myweaviateplanet.model.CompilationAlbum;
@@ -28,15 +27,15 @@ public class SearchCollectionNearText {
         Config config = new Config("http", "localhost:8080");
         WeaviateClient client = new WeaviateClient(config);
 
-        Field _additional = Field.builder()
+        Field additional = Field.builder()
                 .name("_additional")
-                .fields(new Field[]{
-                        Field.builder().name("certainty").build(), // only supported if distance==cosine
-                        Field.builder().name("distance").build(),  // always supported
-                }).build();
+                .fields(Field.builder().name("certainty").build(), // only supported if distance==cosine
+                        Field.builder().name("distance").build()   // always supported
+                ).build();
         Field[] allFields = Arrays.copyOf(fields, fields.length + 1);
-        allFields[fields.length] = _additional;
+        allFields[fields.length] = additional;
 
+        // Embed the question
         NearTextArgument nearText = NearTextArgument.builder()
                 .concepts(new String[]{question})
                 .build();

@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,9 +15,6 @@ import java.util.Map;
 import com.google.gson.GsonBuilder;
 
 import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel;
-import dev.langchain4j.model.embedding.EmbeddingModel;
 import io.weaviate.client.Config;
 import io.weaviate.client.WeaviateClient;
 import io.weaviate.client.base.Result;
@@ -28,7 +24,10 @@ import io.weaviate.client.v1.schema.model.WeaviateClass;
 
 public class EmbedMarkdown {
 
-    private static Map<String, String> documentNames = Map.of("bruce_springsteen_list_of_songs_recorded.md", "Songs", "bruce_springsteen_discography_compilation_albums.md", "CompilationAlbums", "bruce_springsteen_discography_studio_albums.md", "StudioAlbums");
+    private static Map<String, String> documentNames = Map.of(
+            "bruce_springsteen_list_of_songs_recorded.md", "Songs",
+            "bruce_springsteen_discography_compilation_albums.md", "CompilationAlbums",
+            "bruce_springsteen_discography_studio_albums.md", "StudioAlbums");
 
     public static void main(String[] args) {
 
@@ -43,18 +42,17 @@ public class EmbedMarkdown {
 
         List<Document> documents = loadDocuments(toPath("markdown-files"));
 
-        List<TextSegment> segments = new ArrayList<>();
         for (Document document : documents) {
 
             // Split the document line by line
             String[] splittedDocument = document.text().split("\n");
 
-            // split the header on | and remove the first item
+            // split the header on | and remove the first item (the line starts with | and the first item is therefore empty)
             String[] tempSplittedHeader = splittedDocument[0].split("\\|");
             String[] splittedHeader = Arrays.copyOfRange(tempSplittedHeader,1, tempSplittedHeader.length);
 
-            // Create the Weaviate collection
-            ArrayList<Property> properties = new ArrayList();
+            // Create the Weaviate collection, every item in the header is a Property
+            ArrayList<Property> properties = new ArrayList<>();
             for (String splittedHeaderItem : splittedHeader) {
                 Property property = Property.builder().name(splittedHeaderItem.strip()).build();
                 properties.add(property);
@@ -73,15 +71,16 @@ public class EmbedMarkdown {
                 System.out.println("Creation of collection failed: " + documentNames.get(document.metadata("file_name")));
             }
 
-            // Preserve only the rows containing data
+            // Preserve only the rows containing data, the first two rows contain the header
             String[] dataOnly = Arrays.copyOfRange(splittedDocument, 2, splittedDocument.length);
 
             for (String documentLine : dataOnly) {
-                // split a data row on | and remove the first item
+                // split a data row on | and remove the first item (the line starts with | and the first item is therefore empty)
                 String[] tempSplittedDocumentLine = documentLine.split("\\|");
                 String[] splittedDocumentLine = Arrays.copyOfRange(tempSplittedDocumentLine, 1, tempSplittedDocumentLine.length);
 
-                HashMap<String, Object> propertiesDocumentLine = new HashMap();
+                // Every item becomes a property
+                HashMap<String, Object> propertiesDocumentLine = new HashMap<>();
                 int i = 0;
                 for (Property property : properties) {
                     propertiesDocumentLine.put(property.getName(), splittedDocumentLine[i].strip());
@@ -97,7 +96,7 @@ public class EmbedMarkdown {
                 }
 
                 String json = new GsonBuilder().setPrettyPrinting().create().toJson(objectResult.getResult());
-//                System.out.println(json);
+                System.out.println(json);
             }
         }
     }
