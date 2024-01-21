@@ -1,4 +1,4 @@
-| Title                                         | US | AUS | CAN |  GER | IRE | NLD |NZ |NOR|SWE|UK
+| Title                                         | US | AUS | CAN |  GER | IRE | NLD |NZ |NOR|SWE|UK|
 |-----------------------------------------------|--------------|---|---|------|---|---|---|---|---|---|
 | Greetings from Asbury Park,N.J.               | 60           |71|—| —    |—|—|—|—|35|41|
 | The Wild, the Innocent & the E Street Shuffle | 59           |60|—| —    |—|—|—|—|34|33|

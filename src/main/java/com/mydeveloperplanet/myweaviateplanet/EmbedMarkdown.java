@@ -92,7 +92,7 @@ public class EmbedMarkdown {
                         .withProperties(propertiesDocumentLine)
                         .run();
                 if (objectResult.hasErrors()) {
-                    System.out.println("Creaton of object failed: " + propertiesDocumentLine);
+                    System.out.println("Creation of object failed: " + propertiesDocumentLine);
                 }
 
                 String json = new GsonBuilder().setPrettyPrinting().create().toJson(objectResult.getResult());
